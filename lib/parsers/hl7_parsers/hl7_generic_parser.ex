@@ -1,4 +1,4 @@
-defmodule HL7GenericParser do
+defmodule ReverieMessageToolkit.HL7GenericParser do
     @moduledoc """
     """
 

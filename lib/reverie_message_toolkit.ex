@@ -1,5 +1,5 @@
 defmodule ReverieMessageToolkit do
-  def hello do
-    :world
-  end
+  @moduledoc """
+  
+  """
 end
