@@ -14,4 +14,14 @@ defmodule ReverieMessageToolkit.MessageParser do
             _ -> {:reply, :error}
         end
     end
+
+    # Client API
+
+    def start_link(opts) do
+        GenServer.start_link(__MODULE__, :ok, opts)
+    end
+
+    def parse_message(server, parser, message) do
+        Genserver.call(server, {:parse, parser, message})
+    end
 end
