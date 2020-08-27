@@ -9,29 +9,34 @@ defmodule ReverieMessageToolkit.HL7GenericParser do
         segments = String.split(message, "\r")
 
         msh_segments = Enum.filter(segments, fn x -> String.slice(x, 0..2) == "MSH" end)
-        msh = Enum.fetch(msh_segments, 0) # we have to have an MSH segment, it is appropriate to raise an exception
 
-        # Now grab separators
-        field_separator = String.at(msh, 3)
-        subfield_separator = String.at(msh, 4)
-        repeat_separator = String.at(msh, 5)
+        if Kernel.length(msh_segments) > 0 do
+            msh = Enum.fetch!(msh_segments, 0) # we have to have an MSH segment, it is appropriate to raise an exception
 
-        msh_data = parse_msh(msh, field_separator)
-        segment_map = parse_segments(segments, field_separator, subfield_separator, repeat_separator)
+            # Now grab separators
+            field_separator = String.at(msh, 3)
+            subfield_separator = String.at(msh, 4)
+            repeat_separator = String.at(msh, 5)
 
-        version = Map.get(msh_data, :version)
-        message_type = Map.get(msh_data, :message_type)
+            msh_data = parse_msh(msh, field_separator)
+            segment_map = parse_segments(segments, field_separator, subfield_separator, repeat_separator)
 
-        # Now return our message
-        %HL7Message{
-            MSH: msh,
-            field_separator: field_separator,
-            subfield_separator: subfield_separator,
-            repeat_separator: repeat_separator,
-            segments: segments,
-            version: version,
-            message_type: message_type
-        }
+            version = Map.get(msh_data, :version)
+            message_type = Map.get(msh_data, :message_type)
+
+            # Now return our message
+            %HL7Message{
+                MSH: msh,
+                field_separator: field_separator,
+                subfield_separator: subfield_separator,
+                repeat_separator: repeat_separator,
+                segments: segment_map,
+                version: version,
+                message_type: message_type
+            }
+        else
+            {:error, "No MSH found"}
+        end
     end
 
     defp parse_msh(msh_segment, field_separator) do
